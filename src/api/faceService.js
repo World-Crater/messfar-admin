@@ -1,6 +1,6 @@
 import axios from 'axios'
 
-function faceService(token) {
+export function faceService(token) {
   return {
     updateToken(newToken) {
       token = newToken
@@ -28,4 +28,4 @@ function faceService(token) {
   }
 }
 
-module.exports = faceService
+export default faceService
