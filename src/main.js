@@ -18,14 +18,8 @@ import '@/permission' // permission control
 import VueLazyload from 'vue-lazyload'
 import VueLive2d from 'vue-live2d-model'
 
-import { mock } from './utils/mock'
-
 Vue.use(VueLazyload)
 Vue.use(VueLive2d)
-
-if (process.env.NODE_ENV === 'production') {
-  mock()
-}
 
 // set ElementUI lang to EN
 Vue.use(ElementUI, { locale })
