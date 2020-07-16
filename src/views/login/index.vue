@@ -13,7 +13,7 @@
         <el-input
           ref="username"
           v-model="loginForm.username"
-          placeholder="Username"
+          placeholder="Email"
           name="username"
           type="text"
           tabindex="1"
