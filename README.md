@@ -6,6 +6,10 @@
 
 <img src="https://imgur.com/fb25FIT.jpg" width="800">
 
+## Node version
+
+`10.11.0`
+
 ## 使用技術
 
 * Vue.js: 採用Vue CLI架設SPA架構
