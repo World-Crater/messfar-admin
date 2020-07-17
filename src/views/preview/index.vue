@@ -1,13 +1,22 @@
 <template>
   <div class="app-container">
-    <el-form :inline="true" label-width="70px">
-      <el-form-item label="女優尋找">
-        <el-input v-model="search.name" />
-      </el-form-item>
-      <el-form-item>
-        <el-button type="primary" @click="onClickSearch">查询</el-button>
-      </el-form-item>
-    </el-form>
+    <el-row :gutter="20">
+      <el-col :span="21">
+        <el-form :inline="true" label-width="70px">
+          <el-form-item label="女優尋找">
+            <el-input v-model="search.name" />
+          </el-form-item>
+          <el-form-item>
+            <el-button type="primary" @click="onClickSearch">查询</el-button>
+          </el-form-item>
+        </el-form>
+      </el-col>
+      <el-col :span="1">
+        <Info
+          prop-mode="create"
+        />
+      </el-col>
+    </el-row>
     <el-tag
       v-for="tag in avTag"
       :key="tag.name"
@@ -22,17 +31,29 @@
         <div
           v-for="(img, index) in previewCard"
           :ref="'img'+index"
-          :key="index"
+          :key="img.id"
           class="item"
         >
-          <el-card class="box-card-component" style="margin-left:8px;">
+          <el-card class="box-card-component" style="margin-left:8px; width:250px;">
             <div align="center">
               <img v-lazy="img.src" class="img-item">
               <h3>{{ `${img.id}-${img.name}` }}</h3>
-              <div>
-                <el-button type="primary" @click="toUpload(img)">上傳臉圖</el-button>
-                <el-button type="success" @click="toUpdateInfo(img)">更新女優</el-button>
-              </div>
+              <el-row>
+                <el-col :span="12">
+                  <Upload :prop-info-id="img.id" :prop-name="img.name" />
+                </el-col>
+                <el-col :span="12">
+                  <Info
+                    prop-mode="update"
+                    :prop-info-id="img.id"
+                    :prop-name="img.name"
+                    :prop-romanization="img.romanization"
+                    :prop-detail="img.detail"
+                    :prop-preview="img.src"
+                    @on-success-close="onInfoSuccessClose"
+                  />
+                </el-col>
+              </el-row>
             </div>
           </el-card>
         </div>
@@ -55,9 +76,15 @@
 <script>
 import { mapGetters } from 'vuex'
 import faceService from '../../api/faceService'
+import Upload from '../../components/Upload'
+import Info from '../../components/Info'
 import _ from 'lodash'
 
 export default {
+  components: {
+    Upload,
+    Info
+  },
   data() {
     return {
       currentPage: 1,
@@ -69,7 +96,7 @@ export default {
           return this.results.length === 0
         },
         isExistName() {
-          return this.results.filter(item => this.name).length !== 0
+          return this.results.includes(this.name)
         },
         reset() {
           this.name = ''
@@ -99,6 +126,9 @@ export default {
     this.getInfo(10, 0)
   },
   methods: {
+    onInfoSuccessClose () {
+      this.getInfo(10, (this.currentPage - 1) * 10)
+    },
     onCloseTag(tag) {
       if (tag.name === '取消全部') return this.search.reset()
       this.search.results = this.search.results.filter(item => item.name !== tag.name)
@@ -110,7 +140,6 @@ export default {
         if (this.search.isExistName()) return
         const result = await this.faceServiceHandler.searchName(this.search.name)
         if (_.isEmpty(result.rows)) return window.alert('搜尋不到女優')
-        console.log()
         this.search.results.push(...result.rows.map(item => ({
           name: item.name,
           src: item.preview,
@@ -118,6 +147,7 @@ export default {
           detail: item.detail,
           id: item.id
         })))
+        console.log(this.search.results)
       })()
 
       loading.close()
@@ -140,16 +170,6 @@ export default {
         }))
 
       loading.close()
-    },
-    toUpload(img) {
-      this.$router.push(
-        { path: '/upload/index', query: { infoId: img.id, name: img.name }}
-      )
-    },
-    toUpdateInfo(img) {
-      this.$router.push(
-        { path: '/info/index', query: { id: img.id, name: img.name, preview: img.src, romanization: img.romanization, detail: img.detail }}
-      )
     }
   }
 }
@@ -157,7 +177,7 @@ export default {
 
 <style>
 .img-item{
-  width: 300px;
+  width: 200px;
 }
 .content {
   display: flex;

@@ -68,32 +68,6 @@ export const constantRoutes = [
     ]
   },
 
-  {
-    path: '/info',
-    component: Layout,
-    children: [
-      {
-        path: 'index',
-        name: 'Info',
-        component: () => import('@/views/info/index'),
-        meta: { title: '資訊', icon: 'table' }
-      }
-    ]
-  },
-
-  {
-    path: '/upload',
-    component: Layout,
-    children: [
-      {
-        path: 'index',
-        name: 'Upload',
-        component: () => import('@/views/upload/index'),
-        meta: { title: '上傳', icon: 'tree' }
-      }
-    ]
-  },
-
   // 404 page must be placed at the end !!!
   { path: '*', redirect: '/404', hidden: true }
 ]
