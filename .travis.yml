@@ -9,3 +9,6 @@ jobs:
       - docker build -t messfar-admin .
       - docker tag messfar-admin $DOCKER_USERNAME/messfar-admin
       - docker push $DOCKER_USERNAME/messfar-admin
+
+after_success:
+  - ./scripts/notification.sh
