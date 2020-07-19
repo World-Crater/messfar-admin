@@ -80,7 +80,7 @@ export default {
   data() {
     return {
       dialogVisible: false,
-      imgSrc: `${process.env.BASE_URL}selectImageInfo.png`,
+      imgSrc: null,
       name: '',
       infoId: '',
       cropImg: '',
@@ -112,6 +112,7 @@ export default {
     handleClose(done) {
       this.$confirm('確認關閉？')
         .then(_ => {
+          this.destroyedImage()
           done()
         })
         .catch(_ => {})
@@ -121,6 +122,12 @@ export default {
     },
     rotate(deg) {
       this.$refs.cropper.rotate(deg)
+    },
+    isImageExist() {
+      return !!this.$refs.cropper.getCroppedCanvas()
+    },
+    destroyedImage() {
+      this.$refs.cropper.destroy()
     },
     setImage(e) {
       const file = e.target.files[0]
@@ -148,6 +155,13 @@ export default {
       this.$refs.input.click()
     },
     async onSubmit() {
+      // Check input
+      if (!this.isImageExist()) {
+        window.alert('請選擇臉圖再上傳')
+        return
+      }
+
+      // Business logic
       const loading = this.$loading({
         lock: true,
         text: '上傳中'

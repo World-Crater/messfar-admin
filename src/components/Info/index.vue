@@ -15,12 +15,12 @@
       :before-close="handleClose"
     >
       <input
-      ref="input"
-      type="file"
-      name="image"
-      accept="image/*"
-      @change="setImage"
-    >
+        ref="input"
+        type="file"
+        name="image"
+        accept="image/*"
+        @change="setImage"
+      >
       <div class="content">
         <section class="cropper-area">
           <div class="img-cropper">
@@ -61,7 +61,6 @@ import VueCropper from 'vue-cropperjs'
 import 'cropperjs/dist/cropper.css'
 import { mapGetters } from 'vuex'
 import faceService from '../../api/faceService'
-import axios from 'axios'
 
 export default {
   components: {
@@ -98,22 +97,17 @@ export default {
     this.form.name = this.propName
     this.form.romanization = this.propRomanization
     this.form.detail = this.propDetail
-    this.imgSrc = this.propPreview || this.imgSrc
+    this.imgSrc = null
     this.id = this.propInfoId
   },
   methods: {
     handleClose(done) {
       this.$confirm('確認關閉？')
         .then(_ => {
+          this.destroyedImage()
           done()
         })
         .catch(_ => {})
-    },
-    reset() {
-      this.$refs.cropper.reset()
-    },
-    rotate(deg) {
-      this.$refs.cropper.rotate(deg)
     },
     setImage(e) {
       const file = e.target.files[0]
@@ -146,7 +140,7 @@ export default {
         text: '上傳中'
       })
 
-      const imageBlob = await this.getImageBlob()
+      const imageBlob = (this.isImageExist()) ? await this.getImageBlob() : null
       await this.faceServiceHandler.putInfo(imageBlob, this.id, this.form.name, this.form.romanization, this.form.detail)
       if (this.syncFaceToken) await this.uploadFaceToken()
 
@@ -155,12 +149,18 @@ export default {
       this.$emit('on-success-close')
       this.dialogVisible = false
     },
+    isImageExist() {
+      return !!this.$refs.cropper.getCroppedCanvas()
+    },
     getImageBlob() {
       return new Promise((resolve, reject) => {
         this.$refs.cropper.getCroppedCanvas().toBlob(blob => {
           resolve(blob)
         }, 'image/jpeg')
       })
+    },
+    destroyedImage() {
+      this.$refs.cropper.destroy()
     },
     async uploadFaceToken() {
       const loading = this.$loading({

@@ -41,7 +41,7 @@ export function faceService(token) {
     },
     async postInfo(imageBlob, name, romanization, detail) {
       const formData = new FormData()
-      formData.append('preview', imageBlob, 'filename.png')
+      if (imageBlob) formData.append('preview', imageBlob, 'filename.png')
       formData.append('name', name)
       if (!!romanization && romanization !== '') formData.append('romanization', romanization)
       if (!!detail && detail !== '') formData.append('detail', detail)
@@ -57,7 +57,7 @@ export function faceService(token) {
     },
     async putInfo(imageBlob, id, name, romanization, detail) {
       const formData = new FormData()
-      formData.append('preview', imageBlob, 'filename.png')
+      if (imageBlob) formData.append('preview', imageBlob, 'filename.png')
       formData.append('name', name)
       if (!!romanization && romanization !== '') formData.append('romanization', romanization)
       if (!!detail && detail !== '') formData.append('detail', detail)
